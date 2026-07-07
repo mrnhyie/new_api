@@ -8,3 +8,4 @@ class Place extends Model
 {
     protected $fillable = ["category", "location", "center_number"];
 }
+

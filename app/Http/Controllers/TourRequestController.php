@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\TourRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator; // Added missing import
 
 class TourRequestController extends Controller
 {
+    // Get all tour requests
     public function index()
     {
         $tourRequests = TourRequest::all();
         return response()->json($tourRequests);
     }
 
+    // Create a new tour request
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // Inline validation: Automatically handles failures and returns 422 JSON
+        $validatedData = $request->validate([
             "has_visited_before" => "required",
             "tour_date" => "required",
             "tour_time" => "nullable",
@@ -36,20 +38,19 @@ class TourRequestController extends Controller
             "how_did_you_hear_about_us" => "nullable",
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $tourRequest = TourRequest::create($request->all());
+        // Saves only the validated data fields
+        $tourRequest = TourRequest::create($validatedData);
 
         return response()->json($tourRequest, 201);
     }
 
+    // Get a specific tour request
     public function show(TourRequest $tourRequest)
     {
         return response()->json($tourRequest);
     }
 
+    // Delete a tour request
     public function destroy(TourRequest $tourRequest)
     {
         $tourRequest->delete();

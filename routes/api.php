@@ -9,19 +9,8 @@ Route::get("/user", function (Request $request) {
     return $request->user();
 })->middleware("auth:sanctum");
 
-
-//  api/v1
-Route::group("/v1", function () {
-    Route::apiResource("places", PlaceController::class)->except([
-        "create",
-        "edit",
-        "delete",
-        "update",
-    ]);
-    Route::apiResource("tour", TourRequestController::class)->except([
-        "create",
-        "edit",
-        "delete",
-        "update",
-    ]);
+// api/v1
+Route::prefix("v1")->group(function () {
+    Route::apiResource("place", PlaceController::class)->except(["update", "edit", "delete"]);
+    Route::apiResource("tour", TourRequestController::class)->except(["update", "edit", "delete"]);
 });
