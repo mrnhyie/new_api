@@ -4,62 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\TourRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator; // Added missing import
 
 class TourRequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $tourRequests = TourRequest::all();
+        return response()->json($tourRequests);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            "has_visited_before" => "required",
+            "tour_date" => "required",
+            "tour_time" => "nullable",
+            "place_id" => "nullable",
+            "purpose" => "nullable",
+            "number_of_people_visiting" => "nullable",
+            "first_name" => "required",
+            "other_names" => "nullable",
+            "email" => "required|email",
+            "phone_number" => "required",
+            "whatsapp_number" => "nullable",
+            "country" => "required",
+            "city" => "required",
+            "emergency_contact_name" => "nullable",
+            "emergency_contact_phone" => "nullable",
+            "medical_conditions" => "nullable",
+            "how_did_you_hear_about_us" => "nullable",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $tourRequest = TourRequest::create($request->all());
+
+        return response()->json($tourRequest, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(TourRequest $tourRequest)
     {
-        //
+        return response()->json($tourRequest);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TourRequest $tourRequest)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, TourRequest $tourRequest)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(TourRequest $tourRequest)
     {
-        //
+        $tourRequest->delete();
+        return response()->json(null, 204);
     }
 }

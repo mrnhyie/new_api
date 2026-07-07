@@ -6,9 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Place extends Model
 {
-    protected $fillable = [
-        'category',
-        'location',
-        'center_number',
-    ];
+    protected $fillable = ["category", "location", "center_number"];
 }
