@@ -1,16 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\TourRequestController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CallRequestsController;
 
-Route::get("/user", function (Request $request) {
-    return $request->user();
-})->middleware("auth:sanctum");
-
-// api/v1
+// api/v1 routes --> implementing versioning for future updates and backward compatibility
 Route::prefix("v1")->group(function () {
-    Route::apiResource("place", PlaceController::class)->except(["update", "edit", "delete"]);
-    Route::apiResource("tour", TourRequestController::class)->except(["update", "edit", "delete"]);
+    Route::post('/signup', [AuthController::class, 'signup']);
+    Route::post('/login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {});
+    Route::apiResource("place", PlaceController::class)->except(["update", "destroy"]);
+
+    Route::apiResource("tour", TourRequestController::class)->except(["update", "destroy"]);
+    Route::apiResource("call-requests", CallRequestsController::class);
 });
