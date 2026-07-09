@@ -428,8 +428,8 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <div class="flex items-center gap-3">
-                <!-- 🟢 Green Telescope Icon -->
-                <span class="material-icons-outlined text-green-400 text-2xl">astro</span>
+                <!-- 👥 People Avatar Icon (3 people) -->
+                <span class="material-icons-outlined text-green-400 text-2xl">people</span>
                 <span class="text-white text-lg font-bold tracking-tight">myClienteye</span>
             </div>
         </div>
