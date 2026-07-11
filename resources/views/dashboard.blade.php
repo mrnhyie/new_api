@@ -8,11 +8,11 @@
 
     <!-- Tailwind + Inter + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 
     <style>
+        /* --- same as before, plus modal improvements --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -26,7 +26,6 @@
             min-height: 100vh;
         }
 
-        /* ─── sidebar ─── */
         .sidebar {
             width: 240px;
             flex-shrink: 0;
@@ -101,14 +100,12 @@
             color: rgba(255, 255, 255, 0.2);
         }
 
-        /* ─── main ─── */
         .main-wrap {
             flex: 1;
             min-width: 0;
             padding: 24px 32px 32px;
         }
 
-        /* ─── stat cards ─── */
         .stat-card {
             background: #fff;
             border-radius: 16px;
@@ -136,23 +133,19 @@
             background: #e4f5ed;
             color: #0d9e6b;
         }
-
         .stat-icon.blue {
             background: #e3edfa;
             color: #1f7ae0;
         }
-
         .stat-icon.amber {
             background: #fef0e0;
             color: #b26f0a;
         }
-
         .stat-icon.slate {
             background: #eef1f4;
             color: #4a5b68;
         }
 
-        /* ─── tables ─── */
         .table-wrap {
             background: #fff;
             border-radius: 16px;
@@ -196,11 +189,18 @@
             background: #fafdff;
         }
 
-        /* highlight today's rows */
+        /* clickable rows */
+        .table-wrap tbody tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .table-wrap tbody tr:hover {
+            background: #f0f7ff !important;
+        }
+
         .today-row {
             background-color: #ecfdf5 !important;
         }
-
         .today-row:hover {
             background-color: #d1fae5 !important;
         }
@@ -214,18 +214,15 @@
             background: #eef2f5;
             color: #3d4f5a;
         }
-
         .badge.green {
             background: #def5ea;
             color: #0d7a54;
         }
-
         .badge.amber {
             background: #fdf1de;
             color: #b26f0a;
         }
 
-        /* ─── search ─── */
         .search-box {
             display: flex;
             align-items: center;
@@ -257,7 +254,6 @@
             color: #97aab6;
         }
 
-        /* ─── filters ─── */
         .filter-group label {
             font-size: 0.7rem;
             font-weight: 600;
@@ -297,21 +293,17 @@
         .btn:hover {
             background: #e2e8ee;
         }
-
         .btn-primary {
             background: #0e1a24;
             color: #fff;
         }
-
         .btn-primary:hover {
             background: #1d2b33;
         }
-
         .btn-outline {
             background: transparent;
             border: 1px solid #e2e8ee;
         }
-
         .btn-outline:hover {
             background: #f6f8fb;
         }
@@ -320,7 +312,6 @@
             color: #6a7f8b;
         }
 
-        /* ─── live pulse ─── */
         .pulse-dot {
             display: inline-block;
             width: 6px;
@@ -329,33 +320,26 @@
             background: #34d399;
             animation: pulse 1.8s ease-in-out infinite;
         }
-
         @keyframes pulse {
-
-            0%,
-            100% {
+            0%, 100% {
                 opacity: 1;
                 transform: scale(1);
             }
-
             50% {
                 opacity: 0.3;
                 transform: scale(0.8);
             }
         }
 
-        /* ─── section visibility ─── */
         .section-calls,
         .section-tours {
             display: block;
         }
-
         .section-calls.hidden,
         .section-tours.hidden {
             display: none !important;
         }
 
-        /* ─── mobile toggle ─── */
         .menu-toggle {
             background: none;
             border: 0;
@@ -373,7 +357,6 @@
             background: rgba(0, 0, 0, 0.4);
             z-index: 40;
         }
-
         .sidebar-overlay.active {
             display: block;
         }
@@ -389,15 +372,12 @@
                 border-radius: 0;
                 z-index: 50;
             }
-
             .sidebar.open {
                 transform: translateX(0);
             }
-
             .main-wrap {
                 padding: 16px;
             }
-
             .menu-toggle {
                 display: flex;
                 align-items: center;
@@ -410,10 +390,119 @@
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
             }
-
             .table-wrap table {
                 font-size: 0.75rem;
                 min-width: 600px;
+            }
+        }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 32px 32px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.25s ease;
+            position: relative;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96) translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: 0;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6a7f8b;
+            transition: color 0.2s;
+            padding: 4px;
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: #0e1a24;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-right: 40px;
+        }
+        .modal-header .material-icons-outlined {
+            font-size: 28px;
+            color: #0d9e6b;
+        }
+        .modal-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+
+        .modal-item {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #f0f4f8;
+            padding-bottom: 8px;
+        }
+        .modal-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6a7f8b;
+            font-weight: 600;
+        }
+        .modal-item .value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #0e1a24;
+            margin-top: 2px;
+            word-break: break-word;
+        }
+
+        @media (max-width: 480px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+            .modal-card {
+                padding: 24px 18px;
             }
         }
     </style>
@@ -428,7 +517,6 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <div class="flex items-center gap-3">
-                <!-- 👥 People Avatar Icon (3 people) -->
                 <span class="material-icons-outlined text-green-400 text-2xl">people</span>
                 <span class="text-white text-lg font-bold tracking-tight">myClienteye</span>
             </div>
@@ -458,8 +546,9 @@
         <!-- top bar -->
         <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div class="flex items-center gap-3">
-                <button class="menu-toggle" onclick="toggleSidebar()"><span
-                        class="material-icons-outlined">menu</span></button>
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <span class="material-icons-outlined">menu</span>
+                </button>
                 <div>
                     <h1 class="text-xl font-bold text-[#0e1a24] tracking-tight" id="page-title">Dashboard</h1>
                     <p class="text-xs text-muted hidden sm:block" id="page-subtitle">Overview of all requests</p>
@@ -478,7 +567,7 @@
         </header>
 
         <!-- stats -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7" id="stats-row">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
             <div class="stat-card flex items-center gap-4">
                 <div class="stat-icon green"><span class="material-icons-outlined">call</span></div>
                 <div>
@@ -509,7 +598,7 @@
             </div>
         </section>
 
-        <!-- calls section -->
+        <!-- calls -->
         <section id="call-requests" class="section-calls mb-8">
             <h2 class="text-base font-bold flex items-center gap-2 mb-3">
                 <span class="material-icons-outlined text-[#0d9e6b] text-xl">call</span>
@@ -529,15 +618,13 @@
                         </tr>
                     </thead>
                     <tbody id="call-rows">
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-8">Loading…</td>
-                        </tr>
+                        <tr><td colspan="6" class="text-center text-muted py-8">Loading…</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- tours section -->
+        <!-- tours -->
         <section id="tour-requests" class="section-tours">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                 <h2 class="text-base font-bold flex items-center gap-2">
@@ -567,9 +654,7 @@
                         </tr>
                     </thead>
                     <tbody id="tour-rows">
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-8">Loading…</td>
-                        </tr>
+                        <tr><td colspan="8" class="text-center text-muted py-8">Loading…</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -577,57 +662,48 @@
 
         <footer class="mt-10 pt-4 border-t border-[#e9edf2] text-xs text-muted flex flex-wrap justify-between gap-2">
             <span>myClienteye &bull; Auto-refresh 10s</span>
-            <span>v2.2</span>
+            <span>v2.3</span>
         </footer>
+    </div>
+
+    <!-- ─── DETAIL MODAL ─── -->
+    <div id="detailModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+            <div class="modal-header">
+                <span class="material-icons-outlined" id="modal-icon">info</span>
+                <h2 id="modal-heading">Details</h2>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- filled by JavaScript -->
+            </div>
+        </div>
     </div>
 
     <script>
         (function () {
             'use strict';
 
-            // ─── sample data (fallback) – includes today's date for demo ───
+            // ─── today in local timezone ───
             const today = new Date().toISOString().slice(0, 10);
+
+            // ─── sample data (fallback) ───
             const SAMPLE_CALLS = [
-                {
-                    full_name: 'Kwame Mensah', whatsapp_number: '+233501234567', email: 'kwame.mensah@example.com',
-                    call_date: today, call_time: '14:30', period: 'PM'
-                },
-                {
-                    full_name: 'Ama Serwaa', whatsapp_number: '+233541234568', email: 'ama.s@example.com',
-                    call_date: '2026-07-09', call_time: '09:15', period: 'AM'
-                },
-                {
-                    full_name: 'Yaw Asante', whatsapp_number: '+233571234569', email: 'yaw.a@example.com',
-                    call_date: '2026-07-08', call_time: '11:45', period: 'AM'
-                },
+                { id: 1, full_name: 'Kwame Mensah', whatsapp_number: '+233501234567', email: 'kwame.mensah@example.com', call_date: today, call_time: '14:30', period: 'PM', notes: 'Interested in organic farms', created_at: '2026-07-09T10:00:00', updated_at: '2026-07-09T10:00:00' },
+                { id: 2, full_name: 'Ama Serwaa', whatsapp_number: '+233541234568', email: 'ama.s@example.com', call_date: '2026-07-09', call_time: '09:15', period: 'AM', notes: 'Wants to visit cocoa plantation', created_at: '2026-07-08T08:30:00', updated_at: '2026-07-08T08:30:00' },
+                { id: 3, full_name: 'Yaw Asante', whatsapp_number: '+233571234569', email: 'yaw.a@example.com', call_date: '2026-07-08', call_time: '11:45', period: 'AM', notes: 'Looking for irrigation solutions', created_at: '2026-07-07T14:20:00', updated_at: '2026-07-07T14:20:00' },
             ];
             const SAMPLE_TOURS = [
-                {
-                    first_name: 'John', other_names: 'Doe', purpose: 'Vacation and sightseeing',
-                    number_of_people_visiting: 3, country: 'United States', city: 'New York',
-                    phone_number: '+15551234567', tour_date: today, tour_time: '14:30'
-                },
-                {
-                    first_name: 'Ama', other_names: 'Kumi', purpose: 'Educational research',
-                    number_of_people_visiting: 1, country: 'Ghana', city: 'Accra', phone_number: '+233241234567',
-                    tour_date: '2026-10-05', tour_time: '09:00'
-                },
-                {
-                    first_name: 'Carlos', other_names: 'Silva', purpose: 'Team-building retreat',
-                    number_of_people_visiting: 45, country: 'Brazil', city: 'São Paulo', phone_number: '+5511998765432',
-                    tour_date: '2026-12-25', tour_time: '10:30'
-                },
-                {
-                    first_name: 'Yuki', other_names: 'Tanaka', purpose: 'Family weekend', number_of_people_visiting: 5,
-                    country: 'Japan', city: 'Tokyo', phone_number: '+81355551234', tour_date: '2026-08-08',
-                    tour_time: '13:15'
-                },
+                { id: 1, first_name: 'John', other_names: 'Doe', purpose: 'Vacation and sightseeing', number_of_people_visiting: 3, country: 'United States', city: 'New York', phone_number: '+15551234567', tour_date: today, tour_time: '14:30', special_requests: 'Need wheelchair access', created_at: '2026-07-09T09:00:00', updated_at: '2026-07-09T09:00:00' },
+                { id: 2, first_name: 'Ama', other_names: 'Kumi', purpose: 'Educational research', number_of_people_visiting: 1, country: 'Ghana', city: 'Accra', phone_number: '+233241234567', tour_date: '2026-10-05', tour_time: '09:00', special_requests: 'Bring camera equipment', created_at: '2026-07-01T11:00:00', updated_at: '2026-07-01T11:00:00' },
+                { id: 3, first_name: 'Carlos', other_names: 'Silva', purpose: 'Team-building retreat', number_of_people_visiting: 45, country: 'Brazil', city: 'São Paulo', phone_number: '+5511998765432', tour_date: '2026-12-25', tour_time: '10:30', special_requests: 'Lunch for 45', created_at: '2026-06-15T16:30:00', updated_at: '2026-06-15T16:30:00' },
+                { id: 4, first_name: 'Yuki', other_names: 'Tanaka', purpose: 'Family weekend', number_of_people_visiting: 5, country: 'Japan', city: 'Tokyo', phone_number: '+81355551234', tour_date: '2026-08-08', tour_time: '13:15', special_requests: 'Kids activities', created_at: '2026-07-05T12:00:00', updated_at: '2026-07-05T12:00:00' },
             ];
 
             const API_CALLS = '/api/v1/call-requests';
             const API_TOURS = ['/api/v1/tours', '/api/v1/tour', '/api/v1/tour/'];
 
-            // DOM refs
+            // ─── DOM refs ───
             const callSection = document.getElementById('call-requests');
             const tourSection = document.getElementById('tour-requests');
             const callRows = document.getElementById('call-rows');
@@ -653,11 +729,76 @@
             const navCalls = document.getElementById('nav-calls');
             const navTours = document.getElementById('nav-tours');
 
+            const modalOverlay = document.getElementById('detailModal');
+            const modalHeading = document.getElementById('modal-heading');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalBody = document.getElementById('modal-body');
+
             let callsData = [],
                 toursData = [],
                 filter = { start: '', end: '', search: '' },
                 searchTimer = null,
                 currentView = 'overview';
+
+            // ─── Modal functions ───
+            function openModal(item, type) {
+                const iconMap = { call: 'call', tour: 'map' };
+                const titleMap = { call: 'Call Request Details', tour: 'Tour Request Details' };
+                modalIcon.textContent = iconMap[type] || 'info';
+                modalHeading.textContent = titleMap[type] || 'Details';
+
+                // Build detail rows – include ALL fields
+                let html = '';
+                // Define a display order for common fields (optional)
+                const priority = ['id', 'full_name', 'first_name', 'other_names', 'email', 'whatsapp_number', 'phone_number',
+                    'call_date', 'tour_date', 'call_time', 'tour_time', 'period', 'purpose',
+                    'number_of_people_visiting', 'country', 'city', 'special_requests', 'notes',
+                    'created_at', 'updated_at'
+                ];
+                const keys = Object.keys(item);
+                // Sort keys: priority first, then alphabetical
+                keys.sort((a, b) => {
+                    const ia = priority.indexOf(a);
+                    const ib = priority.indexOf(b);
+                    if (ia === -1 && ib === -1) return a.localeCompare(b);
+                    if (ia === -1) return 1;
+                    if (ib === -1) return -1;
+                    return ia - ib;
+                });
+
+                for (const key of keys) {
+                    let value = item[key];
+                    if (value === null || value === undefined || value === '') value = '—';
+                    // Format dates and times nicely
+                    if (key.includes('date') && value !== '—') {
+                        value = fmtDate(value);
+                    }
+                    if (key.includes('time') && value !== '—' && !key.includes('created') && !key.includes('updated')) {
+                        // keep as is
+                    }
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `
+                        <div class="modal-item">
+                            <span class="label">${label}</span>
+                            <span class="value">${safe(value)}</span>
+                        </div>
+                    `;
+                }
+
+                modalBody.innerHTML = html;
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            window.closeModal = function (e) {
+                if (e && e.target !== e.currentTarget) return;
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
 
             // ─── view switching ───
             window.switchView = function (view) {
@@ -693,16 +834,19 @@
             function safe(v) { return v == null || v === '' ? '—' : String(v); }
 
             function fmtDate(d) {
-                if (!d) return '—'; const x = new Date(d); return isNaN(x.getTime()) ? d : x
-                    .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                if (!d) return '—';
+                const x = new Date(d);
+                return isNaN(x.getTime()) ? d : x.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             }
 
             function fmtTime(t) { return t || '—'; }
 
             function isToday(d) {
-                if (!d) return false; const x = new Date(d); if (isNaN(x.getTime())) return false;
-                const t = new Date(); return x.getDate() === t.getDate() && x.getMonth() === t.getMonth() && x
-                    .getFullYear() === t.getFullYear();
+                if (!d) return false;
+                const x = new Date(d);
+                if (isNaN(x.getTime())) return false;
+                const t = new Date();
+                return x.getDate() === t.getDate() && x.getMonth() === t.getMonth() && x.getFullYear() === t.getFullYear();
             }
 
             function updateTimestamp() {
@@ -724,22 +868,30 @@
                 callSubcount.textContent = `(${c})`;
                 updateBadges();
                 if (!c) {
-                    callRows.innerHTML =
-                    `<tr><td colspan="6" class="text-center text-muted py-8">No call requests</td></tr>`; return;
+                    callRows.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-8">No call requests</td></tr>`;
+                    return;
                 }
-                callRows.innerHTML = data.map(it => {
+                callRows.innerHTML = data.map((it, index) => {
                     const todayClass = isToday(it.call_date) ? 'class="today-row"' : '';
                     return `
-            <tr ${todayClass}>
-              <td class="font-medium">${safe(it.full_name)}</td>
-              <td>${safe(it.whatsapp_number)}</td>
-              <td class="truncate max-w-[130px]">${safe(it.email)}</td>
-              <td>${fmtDate(it.call_date)}</td>
-              <td>${fmtTime(it.call_time)}</td>
-              <td><span class="badge ${it.period === 'AM' ? 'green' : 'amber'}">${safe(it.period)}</span></td>
-            </tr>
-          `;
+                        <tr ${todayClass} data-index="${index}" data-type="call">
+                            <td class="font-medium">${safe(it.full_name)}</td>
+                            <td>${safe(it.whatsapp_number)}</td>
+                            <td class="truncate max-w-[130px]">${safe(it.email)}</td>
+                            <td>${fmtDate(it.call_date)}</td>
+                            <td>${fmtTime(it.call_time)}</td>
+                            <td><span class="badge ${it.period === 'AM' ? 'green' : 'amber'}">${safe(it.period)}</span></td>
+                        </tr>
+                    `;
                 }).join('');
+
+                document.querySelectorAll('#call-rows tr[data-type="call"]').forEach((row, idx) => {
+                    row.addEventListener('click', function () {
+                        const index = parseInt(this.dataset.index);
+                        const item = data[index];
+                        if (item) openModal(item, 'call');
+                    });
+                });
             }
 
             function renderTourTable(data) {
@@ -751,36 +903,40 @@
                 const todayCalls = callsData.filter(it => isToday(it.call_date));
                 todayCountEl.textContent = todayTours.length + todayCalls.length;
                 if (!c) {
-                    tourRows.innerHTML =
-                    `<tr><td colspan="8" class="text-center text-muted py-8">No tour requests</td></tr>`; return;
+                    tourRows.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-8">No tour requests</td></tr>`;
+                    return;
                 }
-                tourRows.innerHTML = data.map(it => {
+                tourRows.innerHTML = data.map((it, index) => {
                     const dateVal = it.tour_date || it.date;
                     const todayClass = isToday(dateVal) ? 'class="today-row"' : '';
                     return `
-            <tr ${todayClass}>
-              <td class="font-medium">${safe(it.first_name)} ${safe(it.other_names)}</td>
-              <td><span class="badge">${safe(it.purpose)}</span></td>
-              <td>${safe(it.number_of_people_visiting)}</td>
-              <td>${safe(it.country)}</td>
-              <td>${safe(it.city)}</td>
-              <td>${safe(it.phone_number || it.whatsapp_number)}</td>
-              <td>${fmtDate(dateVal)}</td>
-              <td>${fmtTime(it.tour_time || it.time)}</td>
-            </tr>
-          `;
+                        <tr ${todayClass} data-index="${index}" data-type="tour">
+                            <td class="font-medium">${safe(it.first_name)} ${safe(it.other_names)}</td>
+                            <td><span class="badge">${safe(it.purpose)}</span></td>
+                            <td>${safe(it.number_of_people_visiting)}</td>
+                            <td>${safe(it.country)}</td>
+                            <td>${safe(it.city)}</td>
+                            <td>${safe(it.phone_number || it.whatsapp_number)}</td>
+                            <td>${fmtDate(dateVal)}</td>
+                            <td>${fmtTime(it.tour_time || it.time)}</td>
+                        </tr>
+                    `;
                 }).join('');
+
+                document.querySelectorAll('#tour-rows tr[data-type="tour"]').forEach((row, idx) => {
+                    row.addEventListener('click', function () {
+                        const index = parseInt(this.dataset.index);
+                        const item = data[index];
+                        if (item) openModal(item, 'tour');
+                    });
+                });
             }
 
             function applySearchAndRender() {
                 const q = filter.search.toLowerCase().trim();
-                const fc = callsData.filter(it => !q || (it.full_name || '').toLowerCase().includes(q) || (it
-                    .whatsapp_number || '').toLowerCase().includes(q) || (it.email || '').toLowerCase().includes(q));
+                const fc = callsData.filter(it => !q || (it.full_name || '').toLowerCase().includes(q) || (it.whatsapp_number || '').toLowerCase().includes(q) || (it.email || '').toLowerCase().includes(q));
                 renderCallTable(fc);
-                const ft = toursData.filter(it => !q || (it.first_name || '').toLowerCase().includes(q) || (it
-                    .other_names || '').toLowerCase().includes(q) || (it.city || '').toLowerCase().includes(q) || (it
-                        .country || '').toLowerCase().includes(q) || (it.phone_number || '').toLowerCase().includes(q) || (it
-                            .whatsapp_number || '').toLowerCase().includes(q));
+                const ft = toursData.filter(it => !q || (it.first_name || '').toLowerCase().includes(q) || (it.other_names || '').toLowerCase().includes(q) || (it.city || '').toLowerCase().includes(q) || (it.country || '').toLowerCase().includes(q) || (it.phone_number || '').toLowerCase().includes(q) || (it.whatsapp_number || '').toLowerCase().includes(q));
                 renderTourTable(ft);
             }
 
@@ -809,7 +965,8 @@
                         const arr = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : null);
                         if (arr !== null) {
                             toursData = arr;
-                            applySearchAndRender(); return;
+                            applySearchAndRender();
+                            return;
                         }
                     } catch (e) { }
                 }
@@ -818,10 +975,8 @@
             }
 
             async function loadAll() {
-                await Promise.all([fetchCalls(), fetchTours({
-                    start: filter.start, end: filter
-                        .end
-                })]); updateTimestamp();
+                await Promise.all([fetchCalls(), fetchTours({ start: filter.start, end: filter.end })]);
+                updateTimestamp();
             }
 
             // ─── events ───
@@ -869,6 +1024,7 @@
             }, 10000);
         })();
     </script>
+
 </body>
 
 </html>
