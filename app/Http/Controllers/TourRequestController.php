@@ -40,30 +40,33 @@ class TourRequestController extends Controller
 
         // mark the chosen time as unavailable
         $timeSlot = TimeSlot::find($request->input('tour_time'));
-        if ($timeSlot) {
+        if ($timeSlot->is_available) {
+            $tourRequest = TourRequest::create([
+                "has_visited_before" => $validatedData["has_visited_before"],
+                "tour_date" => $validatedData["tour_date"],
+                "tour_time" => $timeSlot->time,
+                "place_id" => $validatedData["place_id"],
+                "purpose" => $validatedData["purpose"],
+                "number_of_people_visiting" => $validatedData["number_of_people_visiting"],
+                "first_name" => $validatedData["first_name"],
+                "other_names" => $validatedData["other_names"],
+                "email" => $validatedData["email"],
+                "phone_number" => $validatedData["phone_number"],
+                "whatsapp_number" => $validatedData["whatsapp_number"],
+                "country" => $validatedData["country"],
+                "city" => $validatedData["city"],
+                "emergency_contact_name" => $validatedData["emergency_contact_name"],
+                "emergency_contact_phone" => $validatedData["emergency_contact_phone"],
+                "medical_conditions" => $validatedData["medical_conditions"],
+                "how_did_you_hear_about_us" => $validatedData["how_did_you_hear_about_us"],
+            ]);
             $timeSlot->is_available = false;
             $timeSlot->save();
+
+            return response()->json($tourRequest, 201);
+        } else {
+            return response()->json(['message' => 'Time slot is unavailable'], 400);
         }
-        $tourRequest = TourRequest::create([
-            "has_visited_before" => $validatedData["has_visited_before"],
-            "tour_date" => $validatedData["tour_date"],
-            "tour_time" => $timeSlot->time,
-            "place_id" => $validatedData["place_id"],
-            "purpose" => $validatedData["purpose"],
-            "number_of_people_visiting" => $validatedData["number_of_people_visiting"],
-            "first_name" => $validatedData["first_name"],
-            "other_names" => $validatedData["other_names"],
-            "email" => $validatedData["email"],
-            "phone_number" => $validatedData["phone_number"],
-            "whatsapp_number" => $validatedData["whatsapp_number"],
-            "country" => $validatedData["country"],
-            "city" => $validatedData["city"],
-            "emergency_contact_name" => $validatedData["emergency_contact_name"],
-            "emergency_contact_phone" => $validatedData["emergency_contact_phone"],
-            "medical_conditions" => $validatedData["medical_conditions"],
-            "how_did_you_hear_about_us" => "nullable",
-        ]);
-        return response()->json($tourRequest, 201);
     }
 
     public function show(int $tour_id)

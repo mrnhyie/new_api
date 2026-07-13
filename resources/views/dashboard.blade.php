@@ -691,11 +691,12 @@
                             <th>Date</th>
                             <th>Time</th>
                             <th>Period</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="call-rows">
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-8">Loading…</td>
+                            <td colspan="7" class="text-center text-muted py-8">Loading…</td>
                         </tr>
                     </tbody>
                 </table>
@@ -729,11 +730,12 @@
                             <th>Phone</th>
                             <th>Date</th>
                             <th>Time</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tour-rows">
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-8">Loading…</td>
+                            <td colspan="9" class="text-center text-muted py-8">Loading…</td>
                         </tr>
                     </tbody>
                 </table>
@@ -748,7 +750,6 @@
                     Time Slots
                     <span class="text-sm font-normal text-muted ml-1" id="timeslot-subcount">(—)</span>
                 </h2>
-                <!-- Add form inline -->
                 <div class="add-form">
                     <label for="new-time" class="text-sm font-semibold">Add New:</label>
                     <input type="time" id="new-time" step="1800" value="09:00" />
@@ -759,7 +760,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <!-- ID column removed -->
                             <th>Time</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -1019,6 +1019,36 @@
                 sideTimeslotBadge.textContent = timeslotsData.length;
             }
 
+            // ─── Delete functions ───
+            async function deleteCall(id) {
+                if (!confirm('Delete this call request?')) return;
+                try {
+                    const res = await fetch(`${API_CALLS}/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        await fetchCalls();
+                    } else {
+                        alert('Failed to delete');
+                    }
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+
+            async function deleteTour(id) {
+                if (!confirm('Delete this tour request?')) return;
+                try {
+                    // Try the plural endpoint first, fallback to singular if needed
+                    let res = await fetch(`/api/v1/tours/${id}`, { method: 'DELETE' });
+                    if (!res.ok) {
+                        // fallback to singular
+                        res = await fetch(`/api/v1/tour/${id}`, { method: 'DELETE' });
+                    }
+                    if (res.ok) {
+                        await fetchTours({ start: filter.start, end: filter.end });
+                    } else {
+                        alert('Failed to delete');
+                    }
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+
             // ─── render functions ───
             function renderCallTable(data) {
                 const c = data.length;
@@ -1027,7 +1057,7 @@
                 updateBadges();
                 if (!c) {
                     callRows.innerHTML =
-                        `<tr><td colspan="6" class="text-center text-muted py-8">No call requests</td></tr>`;
+                        `<tr><td colspan="7" class="text-center text-muted py-8">No call requests</td></tr>`;
                     return;
                 }
                 callRows.innerHTML = data.map((it, index) => {
@@ -1040,10 +1070,20 @@
                             <td>${fmtDate(it.call_date)}</td>
                             <td>${fmtTime(it.call_time)}</td>
                             <td><span class="badge ${it.period === 'AM' ? 'green' : 'amber'}">${safe(it.period)}</span></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm delete-call" data-id="${it.id}">Delete</button>
+                            </td>
                         </tr>
                     `;
                 }).join('');
                 attachRowClick('#call-rows tr', data, 'call');
+                // Delete events
+                document.querySelectorAll('.delete-call').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        deleteCall(this.dataset.id);
+                    });
+                });
             }
 
             function renderTourTable(data) {
@@ -1056,7 +1096,7 @@
                 todayCountEl.textContent = todayTours.length + todayCalls.length;
                 if (!c) {
                     tourRows.innerHTML =
-                        `<tr><td colspan="8" class="text-center text-muted py-8">No tour requests</td></tr>`;
+                        `<tr><td colspan="9" class="text-center text-muted py-8">No tour requests</td></tr>`;
                     return;
                 }
                 tourRows.innerHTML = data.map((it, index) => {
@@ -1072,10 +1112,20 @@
                             <td>${safe(it.phone_number || it.whatsapp_number)}</td>
                             <td>${fmtDate(dateVal)}</td>
                             <td>${fmtTime(it.tour_time || it.time)}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm delete-tour" data-id="${it.id}">Delete</button>
+                            </td>
                         </tr>
                     `;
                 }).join('');
                 attachRowClick('#tour-rows tr', data, 'tour');
+                // Delete events
+                document.querySelectorAll('.delete-tour').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        deleteTour(this.dataset.id);
+                    });
+                });
             }
 
             function renderTimeSlotTable(data) {
@@ -1171,7 +1221,6 @@
                         .country || '').toLowerCase().includes(q) || (it.phone_number || '').toLowerCase().includes(q) || (it
                             .whatsapp_number || '').toLowerCase().includes(q));
                 renderTourTable(ft);
-                // Time slots – always show full list
                 renderTimeSlotTable(timeslotsData);
             }
 
@@ -1222,7 +1271,6 @@
                 renderTimeSlotTable(timeslotsData);
             }
 
-            // ─── Add new time slot ───
             async function addTimeSlot(time) {
                 try {
                     const res = await fetch(API_TIMESLOTS, {
