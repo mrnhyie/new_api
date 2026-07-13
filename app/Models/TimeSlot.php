@@ -12,7 +12,6 @@ class TimeSlot extends Model
     protected $fillable = ['time', 'is_available'];
 
     protected $casts = [
-        'time' => 'datetime:H:i',
         'is_available' => 'boolean',
         'time_slot_id',
     ];

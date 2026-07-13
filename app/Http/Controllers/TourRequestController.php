@@ -21,7 +21,7 @@ class TourRequestController extends Controller
         $validatedData = $request->validate([
             "has_visited_before" => "required",
             "tour_date" => "required",
-            "time_slot_id" => "required|integer|exists:time_slots,id",
+            "tour_time" => "required|integer|exists:time_slots,id",
             "place_id" => "nullable",
             "purpose" => "nullable",
             "number_of_people_visiting" => "nullable",
@@ -39,12 +39,30 @@ class TourRequestController extends Controller
         ]);
 
         // mark the chosen time as unavailable
-        $timeSlot = TimeSlot::find($request->input('time_slot_id'));
+        $timeSlot = TimeSlot::find($request->input('tour_time'));
         if ($timeSlot) {
             $timeSlot->is_available = false;
             $timeSlot->save();
         }
-        $tourRequest = TourRequest::create($validatedData);
+        $tourRequest = TourRequest::create([
+            "has_visited_before" => $validatedData["has_visited_before"],
+            "tour_date" => $validatedData["tour_date"],
+            "tour_time" => $timeSlot->time,
+            "place_id" => $validatedData["place_id"],
+            "purpose" => $validatedData["purpose"],
+            "number_of_people_visiting" => $validatedData["number_of_people_visiting"],
+            "first_name" => $validatedData["first_name"],
+            "other_names" => $validatedData["other_names"],
+            "email" => $validatedData["email"],
+            "phone_number" => $validatedData["phone_number"],
+            "whatsapp_number" => $validatedData["whatsapp_number"],
+            "country" => $validatedData["country"],
+            "city" => $validatedData["city"],
+            "emergency_contact_name" => $validatedData["emergency_contact_name"],
+            "emergency_contact_phone" => $validatedData["emergency_contact_phone"],
+            "medical_conditions" => $validatedData["medical_conditions"],
+            "how_did_you_hear_about_us" => "nullable",
+        ]);
         return response()->json($tourRequest, 201);
     }
 
@@ -71,7 +89,7 @@ class TourRequestController extends Controller
         if ($timeSlot) {
             $timeSlot->is_available = true;
             $timeSlot->save();
-        } 
+        }
         $tourRequest->delete();
         return response()->json(["message" => "Tour request deleted successfully"], 204);
     }
