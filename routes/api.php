@@ -14,9 +14,9 @@ Route::prefix("v1")->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {});
-    Route::apiResource("place", PlaceController::class)->except(["update", "destroy"]);
+    Route::apiResource("place", PlaceController::class);
 
-    Route::apiResource("tour", TourRequestController::class)->except(["update", "destroy"]);
+    Route::apiResource("tour", TourRequestController::class)->except(["update"]);
     Route::apiResource("call-requests", CallRequestsController::class);
 
 

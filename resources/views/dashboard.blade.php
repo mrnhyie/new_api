@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 
     <style>
-        /* ─── base & sidebar ─── */
+        /* ─── base & sidebar (unchanged) ─── */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -801,54 +801,10 @@
             // ─── today in local timezone ───
             const today = new Date().toISOString().slice(0, 10);
 
-            // ─── sample data (fallback) ───
-            const SAMPLE_CALLS = [
-                {
-                    id: 1, full_name: 'Kwame Mensah', whatsapp_number: '+233501234567', email: 'kwame.mensah@example.com',
-                    call_date: today, call_time: '14:30', period: 'PM', notes: 'Interested in organic farms',
-                    created_at: '2026-07-09T10:00:00', updated_at: '2026-07-09T10:00:00'
-                },
-                {
-                    id: 2, full_name: 'Ama Serwaa', whatsapp_number: '+233541234568', email: 'ama.s@example.com',
-                    call_date: '2026-07-09', call_time: '09:15', period: 'AM', notes: 'Wants to visit cocoa plantation',
-                    created_at: '2026-07-08T08:30:00', updated_at: '2026-07-08T08:30:00'
-                },
-                {
-                    id: 3, full_name: 'Yaw Asante', whatsapp_number: '+233571234569', email: 'yaw.a@example.com',
-                    call_date: '2026-07-08', call_time: '11:45', period: 'AM', notes: 'Looking for irrigation solutions',
-                    created_at: '2026-07-07T14:20:00', updated_at: '2026-07-07T14:20:00'
-                },
-            ];
-            const SAMPLE_TOURS = [
-                {
-                    id: 1, first_name: 'John', other_names: 'Doe', purpose: 'Vacation and sightseeing',
-                    number_of_people_visiting: 3, country: 'United States', city: 'New York',
-                    phone_number: '+15551234567', tour_date: today, tour_time: '14:30',
-                    special_requests: 'Need wheelchair access', created_at: '2026-07-09T09:00:00',
-                    updated_at: '2026-07-09T09:00:00'
-                },
-                {
-                    id: 2, first_name: 'Ama', other_names: 'Kumi', purpose: 'Educational research',
-                    number_of_people_visiting: 1, country: 'Ghana', city: 'Accra', phone_number: '+233241234567',
-                    tour_date: '2026-10-05', tour_time: '09:00', special_requests: 'Bring camera equipment',
-                    created_at: '2026-07-01T11:00:00', updated_at: '2026-07-01T11:00:00'
-                },
-                {
-                    id: 3, first_name: 'Carlos', other_names: 'Silva', purpose: 'Team-building retreat',
-                    number_of_people_visiting: 45, country: 'Brazil', city: 'São Paulo', phone_number: '+5511998765432',
-                    tour_date: '2026-12-25', tour_time: '10:30', special_requests: 'Lunch for 45',
-                    created_at: '2026-06-15T16:30:00', updated_at: '2026-06-15T16:30:00'
-                },
-                {
-                    id: 4, first_name: 'Yuki', other_names: 'Tanaka', purpose: 'Family weekend',
-                    number_of_people_visiting: 5, country: 'Japan', city: 'Tokyo', phone_number: '+81355551234',
-                    tour_date: '2026-08-08', tour_time: '13:15', special_requests: 'Kids activities',
-                    created_at: '2026-07-05T12:00:00', updated_at: '2026-07-05T12:00:00'
-                },
-            ];
-
+            // ─── API endpoints (matching your exact routes) ───
             const API_CALLS = '/api/v1/call-requests';
-            const API_TOURS = ['/api/v1/tours', '/api/v1/tour', '/api/v1/tour/'];
+            const API_TOUR = '/api/v1/tour';
+            const API_TOURS_FETCH = ['/api/v1/tours', '/api/v1/tour'];
             const API_TIMESLOTS = '/api/v1/time-slots';
 
             // ─── DOM refs ───
@@ -1027,7 +983,7 @@
                     if (res.ok) {
                         await fetchCalls();
                     } else {
-                        alert('Failed to delete');
+                        alert('Failed to delete call');
                     }
                 } catch (e) { alert('Error: ' + e.message); }
             }
@@ -1035,16 +991,11 @@
             async function deleteTour(id) {
                 if (!confirm('Delete this tour request?')) return;
                 try {
-                    // Try the plural endpoint first, fallback to singular if needed
-                    let res = await fetch(`/api/v1/tours/${id}`, { method: 'DELETE' });
-                    if (!res.ok) {
-                        // fallback to singular
-                        res = await fetch(`/api/v1/tour/${id}`, { method: 'DELETE' });
-                    }
+                    const res = await fetch(`${API_TOUR}/${id}`, { method: 'DELETE' });
                     if (res.ok) {
                         await fetchTours({ start: filter.start, end: filter.end });
                     } else {
-                        alert('Failed to delete');
+                        alert('Failed to delete tour');
                     }
                 } catch (e) { alert('Error: ' + e.message); }
             }
@@ -1077,7 +1028,6 @@
                     `;
                 }).join('');
                 attachRowClick('#call-rows tr', data, 'call');
-                // Delete events
                 document.querySelectorAll('.delete-call').forEach(btn => {
                     btn.addEventListener('click', function (e) {
                         e.stopPropagation();
@@ -1119,7 +1069,6 @@
                     `;
                 }).join('');
                 attachRowClick('#tour-rows tr', data, 'tour');
-                // Delete events
                 document.querySelectorAll('.delete-tour').forEach(btn => {
                     btn.addEventListener('click', function (e) {
                         e.stopPropagation();
@@ -1153,7 +1102,7 @@
                         </tr>
                     `;
                 }).join('');
-                // Attach row click for detail modal
+                // Row click for detail modal
                 document.querySelectorAll('#timeslot-rows tr').forEach((row, idx) => {
                     row.addEventListener('click', function (e) {
                         if (e.target.closest('button')) return;
@@ -1224,15 +1173,19 @@
                 renderTimeSlotTable(timeslotsData);
             }
 
-            // ─── API fetches ───
+            // ─── API fetches (NO DUMMY DATA) ───
             async function fetchCalls() {
                 try {
                     const res = await fetch(API_CALLS, { cache: 'no-store' });
-                    if (!res.ok) throw new Error();
+                    if (!res.ok) throw new Error('Network response was not ok');
                     const json = await res.json();
+                    // If it's an array, use it; if it's an object with a data property, use that; otherwise empty array
                     const arr = Array.isArray(json) ? json : (json.data || []);
-                    callsData = arr.length ? arr : SAMPLE_CALLS;
-                } catch (e) { callsData = SAMPLE_CALLS; }
+                    callsData = arr; // keep as is (could be empty)
+                } catch (e) {
+                    console.error('Failed to fetch calls:', e);
+                    callsData = []; // show empty, no dummy
+                }
                 applySearchAndRender();
             }
 
@@ -1240,32 +1193,35 @@
                 const qs = new URLSearchParams();
                 if (start) qs.set('start_date', start);
                 if (end) qs.set('end_date', end);
-                for (const candidate of API_TOURS) {
+                let success = false;
+                for (const candidate of API_TOURS_FETCH) {
                     try {
                         const url = qs.toString() ? `${candidate}?${qs.toString()}` : candidate;
                         const res = await fetch(url, { cache: 'no-store' });
                         if (!res.ok) continue;
                         const json = await res.json();
-                        const arr = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : null);
-                        if (arr !== null) {
-                            toursData = arr;
-                            applySearchAndRender();
-                            return;
-                        }
-                    } catch (e) { }
+                        const arr = Array.isArray(json) ? json : (json.data || []);
+                        toursData = arr; // keep real data, even if empty
+                        success = true;
+                        break;
+                    } catch (e) { /* try next candidate */ }
                 }
-                toursData = SAMPLE_TOURS;
+                if (!success) {
+                    console.error('Failed to fetch tours');
+                    toursData = [];
+                }
                 applySearchAndRender();
             }
 
             async function fetchTimeSlots() {
                 try {
                     const res = await fetch(API_TIMESLOTS, { cache: 'no-store' });
-                    if (!res.ok) throw new Error();
+                    if (!res.ok) throw new Error('Network response was not ok');
                     const json = await res.json();
                     const arr = Array.isArray(json) ? json : (json.data || []);
                     timeslotsData = arr;
                 } catch (e) {
+                    console.error('Failed to fetch time slots:', e);
                     timeslotsData = [];
                 }
                 renderTimeSlotTable(timeslotsData);
