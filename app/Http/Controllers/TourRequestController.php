@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TourRequest;
 use Illuminate\Http\Request;
+use \App\Models\TimeSlot;
 
 class TourRequestController extends Controller
 {
@@ -20,7 +21,7 @@ class TourRequestController extends Controller
         $validatedData = $request->validate([
             "has_visited_before" => "required",
             "tour_date" => "required",
-            "tour_time" => "nullable",
+            "time_slot_id" => "required|integer|exists:time_slots,id",
             "place_id" => "nullable",
             "purpose" => "nullable",
             "number_of_people_visiting" => "nullable",
@@ -37,8 +38,13 @@ class TourRequestController extends Controller
             "how_did_you_hear_about_us" => "nullable",
         ]);
 
+        // mark the chosen time as unavailable
+        $timeSlot = TimeSlot::find($request->input('time_slot_id'));
+        if ($timeSlot) {
+            $timeSlot->is_available = false;
+            $timeSlot->save();
+        }
         $tourRequest = TourRequest::create($validatedData);
-
         return response()->json($tourRequest, 201);
     }
 
@@ -60,6 +66,12 @@ class TourRequestController extends Controller
         if (!$tourRequest) {
             return response()->json(['message' => 'Tour request not found'], 404);
         }
+        // set the time slot back to available
+        $timeSlot = TimeSlot::find($tourRequest->time_slot_id);
+        if ($timeSlot) {
+            $timeSlot->is_available = true;
+            $timeSlot->save();
+        } 
         $tourRequest->delete();
         return response()->json(["message" => "Tour request deleted successfully"], 204);
     }

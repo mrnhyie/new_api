@@ -32,13 +32,6 @@ class AuthController extends Controller
         ]);
     }
 
-
-
-
-
-
-
-
     public function signup(Request $request){
         $request->validate([
             'email'=> 'required|email|unique:users',

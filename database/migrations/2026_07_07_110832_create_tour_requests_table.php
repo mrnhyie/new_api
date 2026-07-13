@@ -6,24 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('tour_requests', function (Blueprint $table) {
-
-            // Defaults
             $table->id();
             $table->timestamps();
 
             // Tour Details
             $table->boolean('has_visited_before')->default(false);
             $table->date('tour_date');
-            $table->time('tour_time')->nullable();
-            $table->foreignId('place_id')->nullable();  // linked to an id in the places table
-            $table->string('purpose'); 
+            $table->foreignId('time_slot_id')->constrained('time_slots')->onDelete('set null');
+
+            $table->foreignId('place_id')->nullable();
+            $table->string('purpose');
             $table->integer('number_of_people_visiting')->nullable();
+
 
             // Personal Details
             $table->string('first_name');
@@ -40,9 +37,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('tour_requests');
