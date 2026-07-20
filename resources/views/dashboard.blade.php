@@ -577,6 +577,65 @@
         .add-form input[type="time"]:focus {
             border-color: #34d399;
         }
+
+        /* ─── Login form ─── */
+        .login-form {
+            max-width: 420px;
+            margin: 40px auto;
+            padding: 32px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9edf2;
+        }
+
+        .login-form h2 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8ee;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            outline: 0;
+            transition: border 0.2s;
+        }
+
+        .login-form input:focus {
+            border-color: #34d399;
+        }
+
+        .login-form .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .login-error {
+            color: #f44336;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #dashboard-content {
+            display: none;
+        }
+
+        #dashboard-content.visible {
+            display: block;
+        }
     </style>
 </head>
 
@@ -639,145 +698,160 @@
                     <span class="material-icons-outlined text-sm">refresh</span>
                     <span id="last-updated">—</span>
                 </div>
+                <!-- Logout button (visible when logged in) -->
+                <button id="logout-btn" class="btn btn-danger hidden">Logout</button>
             </div>
         </header>
 
-        <!-- stats -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
-            <div class="stat-card flex items-center gap-4">
-                <div class="stat-icon green"><span class="material-icons-outlined">call</span></div>
-                <div>
-                    <div class="text-xs font-semibold text-muted uppercase tracking-wider">Calls</div>
-                    <div class="text-2xl font-bold" id="call-count">—</div>
-                </div>
-            </div>
-            <div class="stat-card flex items-center gap-4">
-                <div class="stat-icon blue"><span class="material-icons-outlined">map</span></div>
-                <div>
-                    <div class="text-xs font-semibold text-muted uppercase tracking-wider">Tours</div>
-                    <div class="text-2xl font-bold" id="tour-count">—</div>
-                </div>
-            </div>
-            <div class="stat-card flex items-center gap-4">
-                <div class="stat-icon amber"><span class="material-icons-outlined">today</span></div>
-                <div>
-                    <div class="text-xs font-semibold text-muted uppercase tracking-wider">Today</div>
-                    <div class="text-2xl font-bold" id="today-count">—</div>
-                </div>
-            </div>
-            <div class="stat-card flex items-center gap-4">
-                <div class="stat-icon slate"><span class="material-icons-outlined">schedule</span></div>
-                <div>
-                    <div class="text-xs font-semibold text-muted uppercase tracking-wider">Updated</div>
-                    <div class="text-base font-semibold" id="last-updated-short">—</div>
-                </div>
-            </div>
-        </section>
+        <!-- ─── Login Section ─── -->
+        <div id="login-section" class="login-form">
+            <h2>Welcome back</h2>
+            <input id="login-email" type="email" placeholder="Email" value="admin@example.com" />
+            <input id="login-password" type="password" placeholder="Password" value="password123" />
+            <button id="login-btn" class="btn btn-primary">Log in</button>
+            <div id="login-error" class="login-error hidden"></div>
+        </div>
 
-        <!-- calls -->
-        <section id="call-requests" class="section-calls mb-8">
-            <h2 class="text-base font-bold flex items-center gap-2 mb-3">
-                <span class="material-icons-outlined text-[#0d9e6b] text-xl">call</span>
-                Call Requests
-                <span class="text-sm font-normal text-muted ml-1" id="call-subcount">(—)</span>
-            </h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>WhatsApp</th>
-                            <th>Email</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Period</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="call-rows">
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-8">Loading…</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        <!-- ─── Dashboard Content ─── -->
+        <div id="dashboard-content">
+            <!-- stats -->
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
+                <div class="stat-card flex items-center gap-4">
+                    <div class="stat-icon green"><span class="material-icons-outlined">call</span></div>
+                    <div>
+                        <div class="text-xs font-semibold text-muted uppercase tracking-wider">Calls</div>
+                        <div class="text-2xl font-bold" id="call-count">—</div>
+                    </div>
+                </div>
+                <div class="stat-card flex items-center gap-4">
+                    <div class="stat-icon blue"><span class="material-icons-outlined">map</span></div>
+                    <div>
+                        <div class="text-xs font-semibold text-muted uppercase tracking-wider">Tours</div>
+                        <div class="text-2xl font-bold" id="tour-count">—</div>
+                    </div>
+                </div>
+                <div class="stat-card flex items-center gap-4">
+                    <div class="stat-icon amber"><span class="material-icons-outlined">today</span></div>
+                    <div>
+                        <div class="text-xs font-semibold text-muted uppercase tracking-wider">Today</div>
+                        <div class="text-2xl font-bold" id="today-count">—</div>
+                    </div>
+                </div>
+                <div class="stat-card flex items-center gap-4">
+                    <div class="stat-icon slate"><span class="material-icons-outlined">schedule</span></div>
+                    <div>
+                        <div class="text-xs font-semibold text-muted uppercase tracking-wider">Updated</div>
+                        <div class="text-base font-semibold" id="last-updated-short">—</div>
+                    </div>
+                </div>
+            </section>
 
-        <!-- tours -->
-        <section id="tour-requests" class="section-tours">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <h2 class="text-base font-bold flex items-center gap-2">
-                    <span class="material-icons-outlined text-[#1f7ae0] text-xl">map</span>
-                    Tour Requests
-                    <span class="text-sm font-normal text-muted ml-1" id="tour-subcount">(—)</span>
+            <!-- calls -->
+            <section id="call-requests" class="section-calls mb-8">
+                <h2 class="text-base font-bold flex items-center gap-2 mb-3">
+                    <span class="material-icons-outlined text-[#0d9e6b] text-xl">call</span>
+                    Call Requests
+                    <span class="text-sm font-normal text-muted ml-1" id="call-subcount">(—)</span>
                 </h2>
-                <div class="flex items-center gap-2 flex-wrap filter-group">
-                    <label>From</label><input id="start-date" type="date" />
-                    <label>To</label><input id="end-date" type="date" />
-                    <button class="btn btn-primary" id="apply-filter">Apply</button>
-                    <button class="btn btn-outline" id="clear-filter">Clear</button>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>WhatsApp</th>
+                                <th>Email</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Period</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="call-rows">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-8">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Purpose</th>
-                            <th>Group</th>
-                            <th>Country</th>
-                            <th>City</th>
-                            <th>Phone</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tour-rows">
-                        <tr>
-                            <td colspan="9" class="text-center text-muted py-8">Loading…</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            </section>
 
-        <!-- time slots -->
-        <section id="time-slots" class="section-timeslots hidden">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <h2 class="text-base font-bold flex items-center gap-2">
-                    <span class="material-icons-outlined text-[#b26f0a] text-xl">schedule</span>
-                    Time Slots
-                    <span class="text-sm font-normal text-muted ml-1" id="timeslot-subcount">(—)</span>
-                </h2>
-                <div class="add-form">
-                    <label for="new-time" class="text-sm font-semibold">Add New:</label>
-                    <input type="time" id="new-time" step="1800" value="09:00" />
-                    <button class="btn btn-primary" id="add-timeslot">Add</button>
+            <!-- tours -->
+            <section id="tour-requests" class="section-tours">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <h2 class="text-base font-bold flex items-center gap-2">
+                        <span class="material-icons-outlined text-[#1f7ae0] text-xl">map</span>
+                        Tour Requests
+                        <span class="text-sm font-normal text-muted ml-1" id="tour-subcount">(—)</span>
+                    </h2>
+                    <div class="flex items-center gap-2 flex-wrap filter-group">
+                        <label>From</label><input id="start-date" type="date" />
+                        <label>To</label><input id="end-date" type="date" />
+                        <button class="btn btn-primary" id="apply-filter">Apply</button>
+                        <button class="btn btn-outline" id="clear-filter">Clear</button>
+                    </div>
                 </div>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="timeslot-rows">
-                        <tr>
-                            <td colspan="3" class="text-center text-muted py-8">Loading…</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Purpose</th>
+                                <th>Group</th>
+                                <th>Country</th>
+                                <th>City</th>
+                                <th>Phone</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tour-rows">
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-8">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-        <footer class="mt-10 pt-4 border-t border-[#e9edf2] text-xs text-muted flex flex-wrap justify-between gap-2">
-            <span>myClienteye &bull; Auto-refresh 10s</span>
-            <span>v2.3</span>
-        </footer>
+            <!-- time slots -->
+            <section id="time-slots" class="section-timeslots hidden">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <h2 class="text-base font-bold flex items-center gap-2">
+                        <span class="material-icons-outlined text-[#b26f0a] text-xl">schedule</span>
+                        Time Slots
+                        <span class="text-sm font-normal text-muted ml-1" id="timeslot-subcount">(—)</span>
+                    </h2>
+                    <div class="add-form">
+                        <label for="new-time" class="text-sm font-semibold">Add New:</label>
+                        <input type="time" id="new-time" step="1800" value="09:00" />
+                        <button class="btn btn-primary" id="add-timeslot">Add</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timeslot-rows">
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-8">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer
+                class="mt-10 pt-4 border-t border-[#e9edf2] text-xs text-muted flex flex-wrap justify-between gap-2">
+                <span>myClienteye &bull; Auto-refresh 10s</span>
+                <span>v2.3</span>
+            </footer>
+        </div>
     </div>
 
     <!-- ─── DETAIL MODAL ─── -->
@@ -798,16 +872,92 @@
         (function () {
             'use strict';
 
+            // ─── Auth helpers ───
+            const TOKEN_KEY = 'api_token';
+            let token = localStorage.getItem(TOKEN_KEY);
+
+            // DOM refs for login/logout
+            const loginSection = document.getElementById('login-section');
+            const dashboardContent = document.getElementById('dashboard-content');
+            const logoutBtn = document.getElementById('logout-btn');
+            const loginError = document.getElementById('login-error');
+
+            // ─── show/hide UI based on token ───
+            function updateAuthUI() {
+                if (token) {
+                    loginSection.classList.add('hidden');
+                    dashboardContent.classList.add('visible');
+                    logoutBtn.classList.remove('hidden');
+                } else {
+                    loginSection.classList.remove('hidden');
+                    dashboardContent.classList.remove('visible');
+                    logoutBtn.classList.add('hidden');
+                }
+            }
+
+            // ─── Login ───
+            document.getElementById('login-btn').addEventListener('click', async function () {
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value.trim();
+                loginError.classList.add('hidden');
+                try {
+                    const res = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.message || 'Login failed');
+                    }
+                    const data = await res.json();
+                    token = data.token;
+                    localStorage.setItem(TOKEN_KEY, token);
+                    updateAuthUI();
+                    loadAll(); // fetch data now
+                } catch (e) {
+                    loginError.textContent = e.message;
+                    loginError.classList.remove('hidden');
+                }
+            });
+
+            // ─── Logout ───
+            logoutBtn.addEventListener('click', async function () {
+                try {
+                    // Optionally call logout API to revoke token
+                    await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                } catch (e) { /* ignore */ }
+                // Clear token and reload state
+                localStorage.removeItem(TOKEN_KEY);
+                token = null;
+                updateAuthUI();
+                // Clear data and reset UI
+                callsData = [];
+                toursData = [];
+                timeslotsData = [];
+                renderCallTable([]);
+                renderTourTable([]);
+                renderTimeSlotTable([]);
+                updateBadges();
+                // Stop auto-refresh interval? We'll keep it, but it will do nothing.
+            });
+
             // ─── today in local timezone ───
             const today = new Date().toISOString().slice(0, 10);
 
-            // ─── API endpoints (matching your exact routes) ───
+            // ─── API endpoints ───
             const API_CALLS = '/api/v1/call-requests';
             const API_TOUR = '/api/v1/tour';
             const API_TOURS_FETCH = ['/api/v1/tours', '/api/v1/tour'];
             const API_TIMESLOTS = '/api/v1/time-slots';
 
-            // ─── DOM refs ───
+            // ─── DOM refs (all the same) ───
             const callSection = document.getElementById('call-requests');
             const tourSection = document.getElementById('tour-requests');
             const timeslotSection = document.getElementById('time-slots');
@@ -849,6 +999,18 @@
                 filter = { start: '', end: '', search: '' },
                 searchTimer = null,
                 currentView = 'overview';
+
+            // ─── helper: fetch with token ───
+            function authFetch(url, options = {}) {
+                if (!token) {
+                    return Promise.reject(new Error('Not authenticated'));
+                }
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    ...(options.headers || {})
+                };
+                return fetch(url, { ...options, headers });
+            }
 
             // ─── Modal functions ───
             function openModal(item, type) {
@@ -979,7 +1141,7 @@
             async function deleteCall(id) {
                 if (!confirm('Delete this call request?')) return;
                 try {
-                    const res = await fetch(`${API_CALLS}/${id}`, { method: 'DELETE' });
+                    const res = await authFetch(`${API_CALLS}/${id}`, { method: 'DELETE' });
                     if (res.ok) {
                         await fetchCalls();
                     } else {
@@ -991,7 +1153,7 @@
             async function deleteTour(id) {
                 if (!confirm('Delete this tour request?')) return;
                 try {
-                    const res = await fetch(`${API_TOUR}/${id}`, { method: 'DELETE' });
+                    const res = await authFetch(`${API_TOUR}/${id}`, { method: 'DELETE' });
                     if (res.ok) {
                         await fetchTours({ start: filter.start, end: filter.end });
                     } else {
@@ -1118,7 +1280,7 @@
                         const id = this.dataset.id;
                         const current = this.dataset.available === 'true';
                         try {
-                            const res = await fetch(`${API_TIMESLOTS}/${id}`, {
+                            const res = await authFetch(`${API_TIMESLOTS}/${id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ is_available: !current })
@@ -1138,7 +1300,7 @@
                         if (!confirm('Delete this time slot?')) return;
                         const id = this.dataset.id;
                         try {
-                            const res = await fetch(`${API_TIMESLOTS}/${id}`, { method: 'DELETE' });
+                            const res = await authFetch(`${API_TIMESLOTS}/${id}`, { method: 'DELETE' });
                             if (res.ok) {
                                 fetchTimeSlots();
                             } else {
@@ -1173,23 +1335,24 @@
                 renderTimeSlotTable(timeslotsData);
             }
 
-            // ─── API fetches (NO DUMMY DATA) ───
+            // ─── API fetches (with token) ───
             async function fetchCalls() {
+                if (!token) return;
                 try {
-                    const res = await fetch(API_CALLS, { cache: 'no-store' });
+                    const res = await authFetch(API_CALLS, { cache: 'no-store' });
                     if (!res.ok) throw new Error('Network response was not ok');
                     const json = await res.json();
-                    // If it's an array, use it; if it's an object with a data property, use that; otherwise empty array
                     const arr = Array.isArray(json) ? json : (json.data || []);
-                    callsData = arr; // keep as is (could be empty)
+                    callsData = arr;
                 } catch (e) {
                     console.error('Failed to fetch calls:', e);
-                    callsData = []; // show empty, no dummy
+                    callsData = [];
                 }
                 applySearchAndRender();
             }
 
             async function fetchTours({ start = '', end = '' } = {}) {
+                if (!token) return;
                 const qs = new URLSearchParams();
                 if (start) qs.set('start_date', start);
                 if (end) qs.set('end_date', end);
@@ -1197,11 +1360,11 @@
                 for (const candidate of API_TOURS_FETCH) {
                     try {
                         const url = qs.toString() ? `${candidate}?${qs.toString()}` : candidate;
-                        const res = await fetch(url, { cache: 'no-store' });
+                        const res = await authFetch(url, { cache: 'no-store' });
                         if (!res.ok) continue;
                         const json = await res.json();
                         const arr = Array.isArray(json) ? json : (json.data || []);
-                        toursData = arr; // keep real data, even if empty
+                        toursData = arr;
                         success = true;
                         break;
                     } catch (e) { /* try next candidate */ }
@@ -1214,8 +1377,9 @@
             }
 
             async function fetchTimeSlots() {
+                if (!token) return;
                 try {
-                    const res = await fetch(API_TIMESLOTS, { cache: 'no-store' });
+                    const res = await authFetch(API_TIMESLOTS, { cache: 'no-store' });
                     if (!res.ok) throw new Error('Network response was not ok');
                     const json = await res.json();
                     const arr = Array.isArray(json) ? json : (json.data || []);
@@ -1228,8 +1392,9 @@
             }
 
             async function addTimeSlot(time) {
+                if (!token) return false;
                 try {
-                    const res = await fetch(API_TIMESLOTS, {
+                    const res = await authFetch(API_TIMESLOTS, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ time: time, is_available: true })
@@ -1249,6 +1414,7 @@
             }
 
             async function loadAll() {
+                if (!token) return;
                 await Promise.all([
                     fetchCalls(),
                     fetchTours({ start: filter.start, end: filter.end }),
@@ -1305,13 +1471,20 @@
                 }
             });
 
-            // ─── start ───
-            loadAll();
+            // ─── initial auth check ───
+            updateAuthUI();
+            if (token) {
+                loadAll();
+            }
+
+            // ─── auto-refresh (only if token exists) ───
             setInterval(() => {
-                fetchCalls();
-                fetchTours({ start: filter.start, end: filter.end });
-                fetchTimeSlots();
-                updateTimestamp();
+                if (token) {
+                    fetchCalls();
+                    fetchTours({ start: filter.start, end: filter.end });
+                    fetchTimeSlots();
+                    updateTimestamp();
+                }
             }, 10000);
         })();
     </script>

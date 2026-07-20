@@ -10,8 +10,6 @@ use App\Http\Controllers\TimeSlotController;
 
 // api/v1 routes --> implementing versioning for future updates and backward compatibility
 Route::prefix("v1")->group(function () {
-    Route::post('/signup', [AuthController::class, 'signup']);
-    Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {});
     Route::apiResource("place", PlaceController::class);
@@ -26,4 +24,10 @@ Route::prefix("v1")->group(function () {
 
     // other endpoints for time slots
     Route::apiResource("time-slots", TimeSlotController::class);
+
+
+    //  Auth endpoints
+    Route::post('/signup', [AuthController::class, 'signup']);
+    Route::post('/login', [AuthController::class, 'login']);
+
 });
